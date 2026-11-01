@@ -8,8 +8,8 @@
 // @match        https://voz.vn/
 // @run-at       document-start
 // @grant        none
-// @downloadURL  https://github.com/siritami/userscript/main/voz-anti-adblock.user.js
-// @updateURL    https://github.com/siritami/userscript/main/voz-anti-adblock.user.js
+// @downloadURL  https://raw.githubusercontent.com/siritami/userscript/refs/heads/main/voz-anti-adblock.user.js
+// @updateURL    https://raw.githubusercontent.com/siritami/userscript/refs/heads/main/voz-anti-adblock.user.js
 // ==/UserScript==
 (function () {
     const fakeSlotEl = document.createElement('div');
