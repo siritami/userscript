@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voz bypass anti adblock
 // @namespace    Voz bypass anti adblock
-// @version      1.1
+// @version      1.2
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voz.vn
 // @author       siritami
 // @match        https://voz.vn/*
@@ -12,6 +12,17 @@
 // ==/UserScript==
 (function () {
     'use strict';
+
+    function isAdblockRequest(url) {
+        try {
+            const parsed = new URL(String(url), location.href);
+            return parsed.pathname === '/xfmg.php'
+                || (parsed.pathname.endsWith('/index.php') && /(?:^|&)sam-item\/\d+\/get-backup(?:&|$)/.test(parsed.search.slice(1)));
+        } catch (e) {
+            const value = String(url);
+            return value.includes('/xfmg.php') || /sam-item\/\d+\/get-backup/.test(value);
+        }
+    }
 
     const fakeSlotEl = document.createElement('div');
     fakeSlotEl.id = 'voz-fake-slot';
@@ -67,18 +78,28 @@
     try {
         const origBeacon = navigator.sendBeacon.bind(navigator);
         navigator.sendBeacon = function (url, data) {
-            if (String(url).includes('/xfmg.php')) return true;
+            if (isAdblockRequest(url)) return true;
             return origBeacon(url, data);
         };
         const imgDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
         Object.defineProperty(HTMLImageElement.prototype, 'src', {
-            set(v) { if (!String(v).includes('/xfmg.php')) imgDesc.set.call(this, v); },
+            set(v) { if (!isAdblockRequest(v)) imgDesc.set.call(this, v); },
             get() { return imgDesc.get.call(this); }
         });
         const origFetch = window.fetch.bind(window);
         window.fetch = function (url, ...a) {
-            if (String(url).includes('/xfmg.php')) return Promise.resolve(new Response('', { status: 204 }));
+            if (isAdblockRequest(url)) return Promise.resolve(new Response(null, { status: 204 }));
             return origFetch(url, ...a);
+        };
+        const xhrOpen = XMLHttpRequest.prototype.open;
+        const xhrSend = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.open = function (method, url, ...a) {
+            this.__vozBlockedAdRequest = isAdblockRequest(url);
+            return xhrOpen.call(this, method, url, ...a);
+        };
+        XMLHttpRequest.prototype.send = function (...a) {
+            if (this.__vozBlockedAdRequest) return this.abort();
+            return xhrSend.apply(this, a);
         };
     } catch (e) {}
 })();
