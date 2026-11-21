@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         Voz bypass anti adblock
 // @namespace    Voz bypass anti adblock
-// @version      1.2
+// @version      1.4
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voz.vn
 // @author       siritami
 // @match        https://voz.vn/*
 // @run-at       document-start
 // @grant        none
-// @downloadURL  https://github.com/siritami/userscript/main/voz-anti-adblock.user.js
-// @updateURL    https://github.com/siritami/userscript/main/voz-anti-adblock.user.js
+// @downloadURL  https://raw.githubusercontent.com/siritami/userscript/refs/heads/main/voz-anti-adblock.user.js
+// @updateURL    https://raw.githubusercontent.com/siritami/userscript/refs/heads/main/voz-anti-adblock.user.js
 // ==/UserScript==
 (function () {
     'use strict';
