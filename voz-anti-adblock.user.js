@@ -7,8 +7,8 @@
 // @match        https://voz.vn/*
 // @run-at       document-start
 // @grant        none
-// @downloadURL  https://raw.githubusercontent.com/siritami/userscript/refs/heads/main/voz-anti-adblock.user.js
-// @updateURL    https://raw.githubusercontent.com/siritami/userscript/refs/heads/main/voz-anti-adblock.user.js
+// @downloadURL  https://raw.githubusercontent.com/TuiVibe/TuiUserscript/refs/heads/main/voz-anti-adblock.user.js
+// @updateURL    https://raw.githubusercontent.com/TuiVibe/TuiUserscript/refs/heads/main/voz-anti-adblock.user.js
 // ==/UserScript==
 (function () {
     'use strict';
