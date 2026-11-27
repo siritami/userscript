@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voz bypass anti adblock
 // @namespace    Voz bypass anti adblock
-// @version      1.4
+// @version      1.5
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voz.vn
 // @author       siritami
 // @match        https://voz.vn/*
