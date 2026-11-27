@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voz bypass anti adblock
 // @namespace    Voz bypass anti adblock
-// @version      1.7
+// @version      1.8
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voz.vn
 // @author       siritami
 // @match        https://voz.vn/*
@@ -102,6 +102,22 @@
             return xhrSend.apply(this, a);
         };
     } catch (e) {}
+
+    function keepXfrToken() {
+        try {
+            const token = window._xfr;
+            if (!token) return;
+            const prefix = (document.documentElement.getAttribute('data-cookie-prefix') || 'xf_') + 'ls';
+            const m = document.cookie.match(new RegExp('(?:^|; )' + prefix + '=([^;]*)'));
+            const list = (m ? m[1].split('_') : []).concat(token).slice(-10);
+            document.cookie = prefix + '=' + list.join('_') + '; path=/; max-age=172800; samesite=lax; secure';
+        } catch (e) {}
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', keepXfrToken);
+    } else {
+        keepXfrToken();
+    }
 
     function positivePing() {
         const device = matchMedia('(max-width: 650px)').matches ? 'm' : 'd';
