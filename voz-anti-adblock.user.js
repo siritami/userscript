@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voz bypass anti adblock
 // @namespace    Voz bypass anti adblock
-// @version      1.6
+// @version      1.7
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voz.vn
 // @author       siritami
 // @match        https://voz.vn/*
@@ -107,7 +107,6 @@
         const device = matchMedia('(max-width: 650px)').matches ? 'm' : 'd';
         const who = document.documentElement.getAttribute('data-logged-in') === 'true' ? 'u' : 'g';
         const img = new Image();
-        // setAttribute skips the src property setter hooked above.
         img.setAttribute('src', '/xfmg.php?s=' + device + ':' + who + ':p1b0r1e0&n=' + Math.random().toString(36).slice(2));
     }
     if (document.readyState === 'loading') {
