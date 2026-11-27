@@ -107,6 +107,7 @@
         const device = matchMedia('(max-width: 650px)').matches ? 'm' : 'd';
         const who = document.documentElement.getAttribute('data-logged-in') === 'true' ? 'u' : 'g';
         const img = new Image();
+        // setAttribute skips the src property setter hooked above.
         img.setAttribute('src', '/xfmg.php?s=' + device + ':' + who + ':p1b0r1e0&n=' + Math.random().toString(36).slice(2));
     }
     if (document.readyState === 'loading') {
@@ -114,4 +115,64 @@
     } else {
         positivePing();
     }
+
+    const seenItems = new Map();
+    function scanNode(node) {
+        if (node.nodeType !== 1) return;
+        const els = [];
+        if (node.matches && node.matches('.samItem[data-id]')) els.push(node);
+        if (node.querySelectorAll) els.push(...node.querySelectorAll('.samItem[data-id]'));
+        for (const el of els) {
+            const id = el.getAttribute('data-id');
+            if (!id || seenItems.has(id)) continue;
+            const posEl = el.closest('[data-position]');
+            seenItems.set(id, { position: (posEl && posEl.getAttribute('data-position')) || '', sent: false });
+        }
+    }
+    const mo = new MutationObserver(muts => {
+        for (const m of muts) for (const n of m.addedNodes) scanNode(n);
+    });
+    try {
+        mo.observe(document, { childList: true, subtree: true });
+    } catch (e) {}
+
+    function getCsrf() {
+        if (window.XF && XF.config && XF.config.csrf) return XF.config.csrf;
+        for (const s of document.scripts) {
+            const m = s.textContent && s.textContent.match(/csrf:\s*'([^']+)'/);
+            if (m) return m[1];
+        }
+        return null;
+    }
+
+    function sendTrackViews(final) {
+        document.querySelectorAll('.samItem[data-id]').forEach(el => scanNode(el));
+        const csrf = getCsrf();
+        if (!csrf) return;
+        for (const [id, item] of seenItems) {
+            if (item.sent) continue;
+            item.sent = true;
+            const body = new URLSearchParams({
+                position_id: item.position || 'javascript',
+                _xfToken: csrf,
+                _xfResponseType: 'json',
+                _xfWithData: '1'
+            }).toString();
+            fetch('/index.php?sam-item/' + encodeURIComponent(id) + '/track-view', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body
+            }).catch(() => {});
+        }
+        if (final) mo.disconnect();
+    }
+    setTimeout(() => sendTrackViews(false), 4000);
+    window.addEventListener('pagehide', () => sendTrackViews(true));
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') sendTrackViews(false);
+    });
 })();
