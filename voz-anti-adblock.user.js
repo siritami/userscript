@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Voz bypass anti adblock
 // @namespace    Voz bypass anti adblock
-// @version      1.8
+// @version      1.9
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=voz.vn
 // @author       siritami
 // @match        https://voz.vn/*
@@ -167,18 +167,20 @@
         for (const [id, item] of seenItems) {
             if (item.sent) continue;
             item.sent = true;
-            const body = new URLSearchParams({
+            const body = JSON.stringify({
                 position_id: item.position || 'javascript',
-                _xfToken: csrf,
                 _xfResponseType: 'json',
-                _xfWithData: '1'
-            }).toString();
+                _xfWithData: 1,
+                _xfRequestUri: location.pathname + location.search,
+                _xfToken: csrf
+            });
             fetch('/index.php?sam-item/' + encodeURIComponent(id) + '/track-view', {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 },
                 body
             }).catch(() => {});
